@@ -146,4 +146,40 @@ public class EmployeePayroll
             e.printStackTrace(); 
         }
     }
+    /*
+	 * @desc:Prints employees within a specific date range
+	 * 
+	 * @params:startdate , enddate
+	 * 
+	 * @returns:void
+	 */
+    void retrieveEmployeesInDateRange(String startDateRange, String endDateRange) {
+       String QUERY = "SELECT * FROM employee_payroll WHERE start_date BETWEEN ? AND ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+        	 
+             PreparedStatement preparedStatement = connection.prepareStatement(QUERY)) {
+
+            // Set the start and end dates for the date range
+            preparedStatement.setString(1, startDateRange);
+            preparedStatement.setString(2, endDateRange);
+
+            // Retrieve data for employees who joined in the date range
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Reuse the ResultSet to populate EmployeePayrollData objects
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                double salary = resultSet.getDouble("salary");
+                String startDate = resultSet.getString("start_date");
+
+                Employee employeePayrollData = new Employee(id, name, salary, startDate);
+                System.out.println(employeePayrollData.toString());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
