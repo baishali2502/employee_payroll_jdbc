@@ -83,6 +83,38 @@ public class EmployeePayroll
 
 		return connection;
 	}
-	
+	/*
+	 * @desc:Prints details of all employees from employee_payroll table
+	 * 
+	 * @params:none
+	 * 
+	 * @returns:list of employees
+	 */
+	List<Employee> readEmployeePayrollData() 
+	{
+		List<Employee> employees = new ArrayList<>();
+
+		try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+			String query = "SELECT * FROM employee_payroll";
+			System.out.println("SQL Query : "+query+"\n");
+			try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+					ResultSet resultSet = preparedStatement.executeQuery()) {
+
+				while (resultSet.next()) {
+					int id = resultSet.getInt("id");
+					String name = resultSet.getString("NAME");
+					double salary = resultSet.getDouble("salary");
+					String startDate = resultSet.getString("start_date");
+
+					Employee employee = new Employee(id, name, salary, startDate);
+					employees.add(employee);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace(); // Handle exceptions appropriately in a real-world scenario
+		}
+
+		return employees;
+	}
 
 }
