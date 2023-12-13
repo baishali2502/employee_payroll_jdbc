@@ -182,4 +182,69 @@ public class EmployeePayroll
             e.printStackTrace();
         }
     }
+    /*
+   	 * @desc:Calculate SUM, AVG, MIN, MAX, COUNT for Male or Female
+   	 * 
+   	 * @params:none
+   	 * 
+   	 * @returns:void
+   	 */
+       void analyzeEmployeeDataByGender() {
+           try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
+
+           	// Calculate SUM, AVG, MIN, MAX, COUNT for Male
+               analyzeGender(connection, "M");
+
+               // Calculate SUM, AVG, MIN, MAX, COUNT for Female
+               analyzeGender(connection, "F");
+
+           } catch (SQLException e) {
+               e.printStackTrace();
+           }
+       }
+
+   	/*
+   	 * @desc:Calculate SUM, AVG, MIN, MAX, COUNT for Male or Female
+   	 * 
+   	 * @params:Connection and gender
+   	 * 
+   	 * @returns:void
+   	 */
+       private void analyzeGender(Connection connection, String gender) throws SQLException 
+       {
+           String query = "SELECT " +
+                   "SUM(salary) AS total_salary, " +
+                   "AVG(salary) AS avg_salary, " +
+                   "MIN(salary) AS min_salary, " +
+                   "MAX(salary) AS max_salary, " +
+                   "COUNT(*) AS employee_count " +
+                   "FROM employee_payroll " +
+                   "WHERE gender = ? " +
+                   "GROUP BY gender";
+
+           try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+               preparedStatement.setString(1, gender);
+
+               ResultSet resultSet = preparedStatement.executeQuery();
+
+               if (resultSet.next()) {
+                   double totalSalary = resultSet.getDouble("total_salary");
+                   double avgSalary = resultSet.getDouble("avg_salary");
+                   double minSalary = resultSet.getDouble("min_salary");
+                   double maxSalary = resultSet.getDouble("max_salary");
+                   int employeeCount = resultSet.getInt("employee_count");
+
+                   System.out.println("\nAnalysis for Gender " + gender + ":");
+                   System.out.println("Total Salary: " + totalSalary);
+                   System.out.println("Average Salary: " + avgSalary);
+                   System.out.println("Minimum Salary: " + minSalary);
+                   System.out.println("Maximum Salary: " + maxSalary);
+                   System.out.println("Employee Count: " + employeeCount);
+                   System.out.println();
+               }
+
+           } catch (SQLException e) {
+               throw new SQLException("Error in analyzing employee data by gender", e);
+           }
+       }
 }
