@@ -116,5 +116,34 @@ public class EmployeePayroll
 
 		return employees;
 	}
+	/*
+	 * @desc:Updates salary for a specific employee
+	 * 
+	 * @params:none
+	 * 
+	 * @returns:none
+	 */
+    void updateEmployeeSalary(String employeeName, double newSalary) 
+    {
+    	String updateQuery = "UPDATE employee_payroll SET salary = ? WHERE name = ?";
+        System.out.println("\nSQL Query : "+updateQuery+"\n");
+        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+        	preparedStatement.setDouble(1,newSalary);
+        	preparedStatement.setString(2,employeeName);
+        	
+            
 
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Salary updated successfully for " + employeeName+"\n");
+            } else {
+                System.out.println("Employee not found or no changes made.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+        }
+    }
 }
